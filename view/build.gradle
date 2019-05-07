@@ -9,15 +9,25 @@ buildscript {
     }
 }
 
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+def user = properties.getProperty("bintray.user")
+def apiKey = properties.getProperty("bintray.key")
+
+println("bintray user:" + user)
+println("bintray key:" + apiKey)
+
+
 publish {
     userOrg = 'golden'
     groupId = 'com.felix.android'
     artifactId = 'tools-view'
-    publishVersion = '0.0.1'
+    publishVersion = '0.0.3'
     desc = 'android tools for developers'
     website = 'https://github.com/ITcrazywgy/andorid_tools'
-    //bintrayUser = System.getenv('BINTRAY_USER')
-    //bintrayKey = System.getenv('BINTRAY_KEY')
+    bintrayUser = user
+    bintrayKey = apiKey
 }
 
 android {

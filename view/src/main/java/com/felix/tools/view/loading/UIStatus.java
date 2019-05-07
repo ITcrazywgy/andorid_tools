@@ -1,6 +1,5 @@
 package com.felix.tools.view.loading;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
@@ -9,112 +8,29 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
+import com.felix.tools.view.BuildConfig;
 
-/**
- * manage loading status view<br>
- * usage:<br>
- *  //if set true, logs will print into logcat<br>
- *  Gloading.debug(trueOrFalse);<br>
- *  //init the default loading status view creator ({@link Adapter})<br>
- *  Gloading.initDefault(adapter);<br>
- *  //wrap an activity. return the holder<br>
- *  Holder holder = Gloading.getDefault().wrap(activity);<br>
- *  //wrap an activity and set retry task. return the holder<br>
- *  Holder holder = Gloading.getDefault().wrap(activity).withRetry(retryTask);<br>
- *  <br>
- *  holder.showLoading() //show loading status view by holder<br>
- *  holder.showLoadSuccess() //show load success status view by holder (frequently, hide gloading)<br>
- *  holder.showFailed() //show load failed status view by holder (frequently, needs retry task)<br>
- *  holder.showEmpty() //show empty status view by holder. (load completed, but data is empty)
- *
- * @author billy.qi
- * @since 19/3/18 17:49
- */
-public class Gloading {
+public class UIStatus {
+    private static boolean DEBUG = BuildConfig.DEBUG;
     public static final int STATUS_LOADING = 1;
     public static final int STATUS_LOAD_SUCCESS = 2;
     public static final int STATUS_LOAD_FAILED = 3;
     public static final int STATUS_EMPTY_DATA = 4;
-    
-    private static volatile Gloading mDefault;
-    private Adapter mAdapter;
-    private static boolean DEBUG = false;
 
-    /**
-     * Provides view to show current loading status
-     */
-    public interface Adapter {
-        /**
-         * get view for current status
-         * @param holder Holder
-         * @param convertView The old view to reuse, if possible.
-         * @param status current status
-         * @return status view to show. Maybe convertView for reuse.
-         * @see Holder
-         */
+    private StatusAdapter mAdapter;
+
+    public interface StatusAdapter {
         View getView(Holder holder, View convertView, int status);
     }
 
-    /**
-     * set debug mode or not
-     * @param debug true:debug mode, false:not debug mode
-     */
-    public static void debug(boolean debug) {
-        DEBUG = debug;
+    public UIStatus() {
     }
 
-    private Gloading() { }
-
-    /**
-     * Create a new Gloading different from the default one
-     * @param adapter another adapter different from the default one
-     * @return Gloading
-     */
-    public static Gloading from(Adapter adapter) {
-        Gloading gloading = new Gloading();
-        gloading.mAdapter = adapter;
-        return gloading;
+    public UIStatus setAdapter(StatusAdapter adapter) {
+        this.mAdapter = adapter;
+        return this;
     }
 
-    /**
-     * get default Gloading object for global usage in whole app
-     * @return default Gloading object
-     */
-    public static Gloading getDefault() {
-        if (mDefault == null) {
-            synchronized (Gloading.class) {
-                if (mDefault == null) {
-                    mDefault = new Gloading();
-                }
-            }
-        }
-        return mDefault;
-    }
-
-    /**
-     * init the default loading status view creator ({@link Adapter})
-     * @param adapter adapter to create all status views
-     */
-    public static void initDefault(Adapter adapter) {
-        getDefault().mAdapter = adapter;
-    }
-
-    /**
-     * Gloading(loading status view) wrap the whole activity
-     * wrapper is android.R.id.content
-     * @param activity current activity object
-     * @return holder of Gloading
-     */
-    public Holder wrap(Activity activity) {
-        ViewGroup wrapper = activity.findViewById(android.R.id.content);
-        return new Holder(mAdapter, activity, wrapper);
-    }
-
-    /**
-     * Gloading(loading status view) wrap the specific view.
-     * @param view view to be wrapped
-     * @return Holder
-     */
     public Holder wrap(View view) {
         FrameLayout wrapper = new FrameLayout(view.getContext());
         ViewGroup.LayoutParams lp = view.getLayoutParams();
@@ -132,13 +48,9 @@ public class Gloading {
         return new Holder(mAdapter, view.getContext(), wrapper);
     }
 
-    /**
-     * Gloading holder<br>
-     * create by {@link Gloading#wrap(Activity)} or {@link Gloading#wrap(View)}<br>
-     * the core API for showing all status view
-     */
+
     public static class Holder {
-        private Adapter mAdapter;
+        private StatusAdapter mAdapter;
         private Context mContext;
         private Runnable mRetryTask;
         private View mCurStatusView;
@@ -147,57 +59,43 @@ public class Gloading {
         private SparseArray<View> mStatusViews = new SparseArray<>(4);
         private Object mData;
 
-        private Holder(Adapter adapter, Context context, ViewGroup wrapper) {
+        private Holder(StatusAdapter adapter, Context context, ViewGroup wrapper) {
             this.mAdapter = adapter;
             this.mContext = context;
             this.mWrapper = wrapper;
         }
 
-        /**
-         * set retry task when user click the retry button in load failed page
-         * @param task when user click in load failed UI, run this task
-         * @return this
-         */
+
         public Holder withRetry(Runnable task) {
             mRetryTask = task;
             return this;
         }
 
-        /**
-         * set extension data
-         * @param data extension data
-         * @return this
-         */
         public Holder withData(Object data) {
             this.mData = data;
             return this;
         }
 
-        /** show UI for status: {@link #STATUS_LOADING} */
         public void showLoading() {
             showLoadingStatus(STATUS_LOADING);
         }
-        /** show UI for status: {@link #STATUS_LOAD_SUCCESS} */
+
+
         public void showLoadSuccess() {
             showLoadingStatus(STATUS_LOAD_SUCCESS);
         }
-        /** show UI for status: {@link #STATUS_LOAD_FAILED} */
+
+
         public void showLoadFailed() {
             showLoadingStatus(STATUS_LOAD_FAILED);
         }
-        /** show UI for status: {@link #STATUS_EMPTY_DATA} */
+
+
         public void showEmpty() {
             showLoadingStatus(STATUS_EMPTY_DATA);
         }
 
-        /**
-         * Show specific status UI
-         * @param status status
-         * @see #showLoading()
-         * @see #showLoadFailed()
-         * @see #showLoadSuccess()
-         * @see #showEmpty()
-         */
+
         public void showLoadingStatus(int status) {
             if (curState == status || !validate()) {
                 return;
@@ -235,7 +133,7 @@ public class Gloading {
                 }
                 mCurStatusView = view;
                 mStatusViews.put(status, view);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 if (DEBUG) {
                     e.printStackTrace();
                 }
@@ -244,7 +142,7 @@ public class Gloading {
 
         private boolean validate() {
             if (mAdapter == null) {
-                printLog("Gloading.Adapter is not specified.");
+                printLog("StatusAdapter is not specified.");
             }
             if (mContext == null) {
                 printLog("Context is null.");
@@ -259,32 +157,19 @@ public class Gloading {
             return mContext;
         }
 
-        /**
-         * get wrapper
-         * @return container of gloading
-         */
         public ViewGroup getWrapper() {
             return mWrapper;
         }
 
-        /**
-         * get retry task
-         * @return retry task
-         */
         public Runnable getRetryTask() {
             return mRetryTask;
         }
 
-        /**
-         *
-         * get extension data
-         * @param <T> return type
-         * @return data
-         */
+
         public <T> T getData() {
             try {
                 return (T) mData;
-            } catch(Exception e) {
+            } catch (Exception e) {
                 if (DEBUG) {
                     e.printStackTrace();
                 }
