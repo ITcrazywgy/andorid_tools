@@ -1,17 +1,27 @@
-package com.felix.tools.sample.view;
+package com.felix.tools.view.loading;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import com.felix.tools.sample.R;
-import com.felix.tools.view.loading.UIStatus;
+import android.view.animation.*;
+import android.widget.ImageView;
+import com.felix.tools.view.R;
+
+import static android.view.animation.Animation.INFINITE;
+import static android.view.animation.Animation.RELATIVE_TO_SELF;
 
 
-public class GlobalStatusAdapter implements UIStatus.StatusAdapter {
+public class DefaultStyle implements UIStatus.StatusAdapter {
 
     @Override
     public View getLoadingView(ViewGroup parent) {
         View loadingView = LayoutInflater.from(parent.getContext()).inflate(R.layout.ui_status_loading, parent, false);
+        ImageView ivLoading = loadingView.findViewById(R.id.image);
+        RotateAnimation rotate = new RotateAnimation(0f, 360f, RELATIVE_TO_SELF, 0.5f, RELATIVE_TO_SELF, 0.5f);
+        rotate.setRepeatCount(INFINITE);
+        rotate.setDuration(1000);
+        rotate.setInterpolator(new LinearInterpolator());
+        ivLoading.startAnimation(rotate);
         return loadingView;
     }
 
