@@ -20,10 +20,10 @@ println("bintray key:" + apiKey)
 
 
 publish {
-    userOrg = 'golden'
+    userOrg = 'felix2019'
     groupId = 'com.felix.android'
     artifactId = 'tools-view'
-    publishVersion = '0.0.3'
+    publishVersion = '0.0.4'
     desc = 'android tools for developers'
     website = 'https://github.com/ITcrazywgy/andorid_tools'
     bintrayUser = user
@@ -50,7 +50,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:28.0.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
