@@ -146,20 +146,14 @@ public class UIStatus {
 
 
         public UIStatus build() {
-            validate();
-            return new UIStatus(this);
-        }
-
-
-        private void validate() {
-            if (mStatusAdapter == null) {
-                throw new IllegalStateException("StatusViewAdapter is not specified.");
-            }
             if (mContentView == null) {
                 throw new IllegalStateException("ContentView is not specified.");
             }
+            if (mStatusAdapter == null) {
+                mStatusAdapter = new DefaultAdapter();
+            }
+            return new UIStatus(this);
         }
-
 
     }
 

@@ -4,7 +4,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import com.felix.tools.sample.R
-import com.felix.tools.view.loading.DefaultStyle
+import com.felix.tools.view.loading.DefaultAdapter
 import com.felix.tools.view.loading.UIStatus
 import kotlinx.android.synthetic.main.activity_ui_status.*
 
@@ -16,7 +16,7 @@ class UIStatusActivity : AppCompatActivity() {
 
         val statusHelper = UIStatus.Builder()
             .content(content)
-            .statusViewAdapter(DefaultStyle())
+            .statusViewAdapter(DefaultAdapter())
             .build()
 
         statusHelper.showLoading()

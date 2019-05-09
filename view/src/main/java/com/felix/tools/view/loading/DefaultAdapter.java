@@ -1,27 +1,30 @@
 package com.felix.tools.view.loading;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.*;
 import android.widget.ImageView;
 import com.felix.tools.view.R;
+import com.github.ybq.android.spinkit.style.Circle;
 
 import static android.view.animation.Animation.INFINITE;
 import static android.view.animation.Animation.RELATIVE_TO_SELF;
 
 
-public class DefaultStyle implements UIStatus.StatusAdapter {
+public class DefaultAdapter implements UIStatus.StatusAdapter {
 
     @Override
     public View getLoadingView(ViewGroup parent) {
         View loadingView = LayoutInflater.from(parent.getContext()).inflate(R.layout.ui_status_loading, parent, false);
         ImageView ivLoading = loadingView.findViewById(R.id.image);
-        RotateAnimation rotate = new RotateAnimation(0f, 360f, RELATIVE_TO_SELF, 0.5f, RELATIVE_TO_SELF, 0.5f);
-        rotate.setRepeatCount(INFINITE);
-        rotate.setDuration(1000);
-        rotate.setInterpolator(new LinearInterpolator());
-        ivLoading.startAnimation(rotate);
+        Circle circleDrawable = new Circle();
+        circleDrawable.setColor(Color.RED);
+
+
+        circleDrawable.start();
+        ivLoading.setImageDrawable(circleDrawable);
         return loadingView;
     }
 

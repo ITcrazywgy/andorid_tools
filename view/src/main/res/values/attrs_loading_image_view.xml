@@ -1,0 +1,5 @@
+<resources>
+    <declare-styleable name="LoadingView">
+        <attr name="loading_color" format="color"/>
+    </declare-styleable>
+</resources>
