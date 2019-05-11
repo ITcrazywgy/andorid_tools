@@ -19,12 +19,21 @@ public class DefaultAdapter implements UIStatus.StatusAdapter {
     public View getLoadingView(ViewGroup parent) {
         View loadingView = LayoutInflater.from(parent.getContext()).inflate(R.layout.ui_status_loading, parent, false);
         ImageView ivLoading = loadingView.findViewById(R.id.image);
-        Circle circleDrawable = new Circle();
-        circleDrawable.setColor(Color.RED);
-
-
-        circleDrawable.start();
+        final Circle circleDrawable = new Circle();
         ivLoading.setImageDrawable(circleDrawable);
+        circleDrawable.setColor(Color.RED);
+        ivLoading.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+            @Override
+            public void onViewAttachedToWindow(View v) {
+                circleDrawable.start();
+            }
+
+            @Override
+            public void onViewDetachedFromWindow(View v) {
+                circleDrawable.stop();
+            }
+        });
+
         return loadingView;
     }
 
